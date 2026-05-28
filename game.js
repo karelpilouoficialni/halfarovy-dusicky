@@ -3,6 +3,8 @@
 // =============================================
 
 // ── STATE ──
+console.log('game.js loaded');
+
 let difficulty = 'easy';
 let progress = 0;
 let combo = 1;
@@ -227,6 +229,7 @@ function animateHalfar() {
 
 // ── START GAME ──
 function startGame() {
+  console.log('startGame() called');
   if (challengeTimeout) { clearTimeout(challengeTimeout); challengeTimeout = null; }
   challengeActive = false;
   currentAnswer = null;
@@ -279,6 +282,7 @@ function startTimer() {
 
 // ── CHALLENGES ──
 function nextChallenge() {
+  console.log('nextChallenge() called');
   challengeActive = true;
   const types = difficulty === 'easy'
     ? ['typing', 'math', 'mcq']
@@ -289,12 +293,32 @@ function nextChallenge() {
 }
 
 function renderChallenge(type) {
+  console.log('renderChallenge() called, type:', type);
   const typeEl     = document.getElementById('challenge-type');
   const contentEl  = document.getElementById('challenge-content');
   const inputEl    = document.getElementById('challenge-input-area');
   const feedbackEl = document.getElementById('challenge-feedback');
+  console.log('elements found:', !!typeEl, !!contentEl, !!inputEl, !!feedbackEl);
   feedbackEl.textContent = '';
   feedbackEl.className = 'challenge-feedback';
+  inputEl.style.pointerEvents = 'auto';
+
+  inputEl.onclick = function(e) {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    if (type === 'typing' && btn.id === 'typing-send') checkTyping();
+    else if (type === 'math' && btn.id === 'math-send') checkMath();
+    else if (type === 'sequence' && btn.id === 'seq-send') checkSequence();
+    else if (type === 'mcq' && btn.classList.contains('mcq-btn')) checkMCQ(btn);
+  };
+  inputEl.onkeydown = function(e) {
+    if (e.key !== 'Enter') return;
+    const inp = e.target.closest('input');
+    if (!inp) return;
+    if (type === 'typing' && inp.id === 'type-input') checkTyping();
+    else if (type === 'math' && inp.id === 'math-input') checkMath();
+    else if (type === 'sequence' && inp.id === 'seq-input') checkSequence();
+  };
 
   if (type === 'typing') {
     const word = TYPING_CHALLENGES[Math.floor(Math.random() * TYPING_CHALLENGES.length)];
@@ -303,12 +327,10 @@ function renderChallenge(type) {
     contentEl.textContent = word;
     inputEl.innerHTML = `
       <input class="holo-input" id="type-input" type="text" placeholder="Napiš přesně..." autocomplete="off" spellcheck="false"/>
-      <button class="holo-btn" onclick="checkTyping()">SEND</button>
+      <button class="holo-btn" id="typing-send">SEND</button>
     `;
-    setTimeout(() => {
-      const inp = document.getElementById('type-input');
-      if (inp) { inp.focus(); inp.addEventListener('keydown', e => { if (e.key === 'Enter') checkTyping(); }); }
-    }, 50);
+    const inp = document.getElementById('type-input');
+    if (inp) inp.focus();
 
   } else if (type === 'math') {
     const m = generateMath(difficulty);
@@ -317,12 +339,10 @@ function renderChallenge(type) {
     contentEl.textContent = m.question;
     inputEl.innerHTML = `
       <input class="holo-input" id="math-input" type="number" placeholder="Výsledek..." />
-      <button class="holo-btn" onclick="checkMath()">SEND</button>
+      <button class="holo-btn" id="math-send">SEND</button>
     `;
-    setTimeout(() => {
-      const inp = document.getElementById('math-input');
-      if (inp) { inp.focus(); inp.addEventListener('keydown', e => { if (e.key === 'Enter') checkMath(); }); }
-    }, 50);
+    const inp = document.getElementById('math-input');
+    if (inp) inp.focus();
 
   } else if (type === 'mcq') {
     const q = MCQ_CHALLENGES[Math.floor(Math.random() * MCQ_CHALLENGES.length)];
@@ -333,9 +353,6 @@ function renderChallenge(type) {
     inputEl.innerHTML = shuffled.map(opt =>
       `<button class="mcq-btn">${opt}</button>`
     ).join('');
-    inputEl.querySelectorAll('.mcq-btn').forEach(btn => {
-      btn.addEventListener('click', () => checkMCQ(btn));
-    });
 
   } else if (type === 'sequence') {
     const s = SEQUENCES[Math.floor(Math.random() * SEQUENCES.length)];
@@ -344,17 +361,16 @@ function renderChallenge(type) {
     contentEl.textContent = s.sequence;
     inputEl.innerHTML = `
       <input class="holo-input" id="seq-input" type="text" placeholder="Další číslo..." autocomplete="off"/>
-      <button class="holo-btn" onclick="checkSequence()">SEND</button>
+      <button class="holo-btn" id="seq-send">SEND</button>
     `;
-    setTimeout(() => {
-      const inp = document.getElementById('seq-input');
-      if (inp) { inp.focus(); inp.addEventListener('keydown', e => { if (e.key === 'Enter') checkSequence(); }); }
-    }, 50);
+    const inp = document.getElementById('seq-input');
+    if (inp) inp.focus();
   }
 }
 
 // ── CHECK FUNCTIONS ──
 function checkTyping() {
+  console.log('checkTyping() called');
   const val = (document.getElementById('type-input')?.value || '').trim().toUpperCase();
   evaluate(val === currentAnswer.toUpperCase());
 }
@@ -363,6 +379,7 @@ function checkMath() {
   evaluate(val === currentAnswer);
 }
 function checkMCQ(btn) {
+  console.log('checkMCQ() called, answer:', btn.textContent);
   document.querySelectorAll('.mcq-btn').forEach(b => b.disabled = true);
   if (btn.textContent === currentAnswer) {
     btn.classList.add('correct');
@@ -382,6 +399,7 @@ function checkSequence() {
 
 // ── EVALUATE ──
 function evaluate(correct) {
+  console.log('evaluate() called, correct:', correct, 'challengeActive:', challengeActive);
   if (!challengeActive) return;
   challengeActive = false;
 
@@ -517,6 +535,7 @@ function spawnSkullRain() {
 
 // ── BACK TO MENU ──
 function confirmGoMenu() {
+  console.log('confirmGoMenu() called');
   if (confirm('Opravdu chceš opustit útok a vrátit se do menu?')) goMenu();
 }
 

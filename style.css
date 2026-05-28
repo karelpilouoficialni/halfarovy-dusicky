@@ -93,13 +93,11 @@ html, body {
   position: fixed; inset: 0; z-index: 10;
   overflow-y: auto;
   overflow-x: hidden;
-  pointer-events: none;
 }
 .screen.active {
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: all;
 }
 
 /* ── MENU QUOTE ── */
@@ -457,7 +455,7 @@ html, body {
    ============================================ */
 
 #screen-game { display: none; }
-#screen-game.active { display: flex; flex-direction: column; padding: 0; }
+#screen-game.active { display: flex; flex-direction: column; padding: 0; pointer-events: auto; }
 
 .game-layout {
   display: flex; flex-direction: column;
@@ -682,6 +680,7 @@ html, body {
   position: absolute; top: 0; left: 0; right: 0; height: 1px;
   background: linear-gradient(90deg, transparent, var(--cyan), transparent);
   animation: scanLine 3s linear infinite;
+  pointer-events: none;
 }
 @keyframes scanLine { 0%{top:0} 100%{top:100%} }
 
@@ -703,6 +702,7 @@ html, body {
 }
 .challenge-input-area {
   display: flex; gap: 10px; flex-wrap: wrap;
+  pointer-events: auto;
 }
 .holo-input {
   background: rgba(0,245,255,0.06);
