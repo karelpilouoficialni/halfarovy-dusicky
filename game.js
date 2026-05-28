@@ -3,7 +3,6 @@
 // =============================================
 
 // ── STATE ──
-console.log('game.js loaded');
 
 let difficulty = 'easy';
 let progress = 0;
@@ -229,7 +228,6 @@ function animateHalfar() {
 
 // ── START GAME ──
 function startGame() {
-  console.log('startGame() called');
   if (challengeTimeout) { clearTimeout(challengeTimeout); challengeTimeout = null; }
   challengeActive = false;
   currentAnswer = null;
@@ -282,7 +280,6 @@ function startTimer() {
 
 // ── CHALLENGES ──
 function nextChallenge() {
-  console.log('nextChallenge() called');
   challengeActive = true;
   const types = difficulty === 'easy'
     ? ['typing', 'math', 'mcq']
@@ -293,12 +290,10 @@ function nextChallenge() {
 }
 
 function renderChallenge(type) {
-  console.log('renderChallenge() called, type:', type);
   const typeEl     = document.getElementById('challenge-type');
   const contentEl  = document.getElementById('challenge-content');
   const inputEl    = document.getElementById('challenge-input-area');
   const feedbackEl = document.getElementById('challenge-feedback');
-  console.log('elements found:', !!typeEl, !!contentEl, !!inputEl, !!feedbackEl);
   feedbackEl.textContent = '';
   feedbackEl.className = 'challenge-feedback';
   inputEl.style.pointerEvents = 'auto';
@@ -370,7 +365,6 @@ function renderChallenge(type) {
 
 // ── CHECK FUNCTIONS ──
 function checkTyping() {
-  console.log('checkTyping() called');
   const val = (document.getElementById('type-input')?.value || '').trim().toUpperCase();
   evaluate(val === currentAnswer.toUpperCase());
 }
@@ -379,7 +373,6 @@ function checkMath() {
   evaluate(val === currentAnswer);
 }
 function checkMCQ(btn) {
-  console.log('checkMCQ() called, answer:', btn.textContent);
   document.querySelectorAll('.mcq-btn').forEach(b => b.disabled = true);
   if (btn.textContent === currentAnswer) {
     btn.classList.add('correct');
@@ -399,7 +392,6 @@ function checkSequence() {
 
 // ── EVALUATE ──
 function evaluate(correct) {
-  console.log('evaluate() called, correct:', correct, 'challengeActive:', challengeActive);
   if (!challengeActive) return;
   challengeActive = false;
 
@@ -535,7 +527,6 @@ function spawnSkullRain() {
 
 // ── BACK TO MENU ──
 function confirmGoMenu() {
-  console.log('confirmGoMenu() called');
   if (confirm('Opravdu chceš opustit útok a vrátit se do menu?')) goMenu();
 }
 

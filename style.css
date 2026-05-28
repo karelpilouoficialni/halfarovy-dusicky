@@ -844,6 +844,7 @@ html, body {
   display: flex; align-items: center; justify-content: center;
   opacity: 0;
   transition: opacity 0.5s;
+  pointer-events: none;
 }
 .browser-crash-overlay.visible { opacity: 1; }
 .crash-text {
