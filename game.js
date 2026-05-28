@@ -12,6 +12,7 @@ let timeLeft = 60;
 let challengeActive = false;
 let currentAnswer = null;
 let consecutiveCorrect = 0;
+let menuQuoteIndex = 0;
 
 const DIFFICULTIES = {
   easy:   { time: 90, progressPerCorrect: 14, progressDecay: 0, label: 'NOOB',   threat: 'NÍZKÁ' },
@@ -19,7 +20,17 @@ const DIFFICULTIES = {
   hard:   { time: 45, progressPerCorrect: 8,  progressDecay: 2, label: 'HALFAR', threat: 'KRITICKÁ' }
 };
 
-// ── HALFAR COMMENTS ──
+// ── MENU QUOTES (rotate each visit) ──
+const MENU_QUOTES = [
+  "Dneska schytají víc než jedničku z matiky.",
+  "Bakaláři? Spíš Bakala-BYE.",
+  "Wifi 0.3 kb/s? To jsem já.",
+  "Ping 9999ms – klasický Halfar morning.",
+  "Omlouvám se učitelům. Ne opravdu ne."
+];
+
+// ── HALFAR IN-GAME COMMENTS ──
+const HALFAR_COMMENTS = {
   correct: [
     "Jo, to je ono!",
     "Server se třese!",
@@ -113,11 +124,11 @@ const MCQ_CHALLENGES = [
 
 // ── SEQUENCE CHALLENGE ──
 const SEQUENCES = [
-  { sequence: "2, 4, 8, 16, ?",  answer: "32" },
+  { sequence: "2, 4, 8, 16, ?",   answer: "32" },
   { sequence: "1, 1, 2, 3, 5, ?", answer: "8" },
-  { sequence: "10, 8, 6, 4, ?",  answer: "2" },
-  { sequence: "3, 9, 27, 81, ?", answer: "243" },
-  { sequence: "100, 50, 25, ?",  answer: "12.5" },
+  { sequence: "10, 8, 6, 4, ?",   answer: "2" },
+  { sequence: "3, 9, 27, 81, ?",  answer: "243" },
+  { sequence: "100, 50, 25, ?",   answer: "12.5" },
 ];
 
 // ── PARTICLES ──
@@ -131,10 +142,8 @@ const SEQUENCES = [
     h = canvas.height = window.innerHeight;
   }
 
-  function Particle() {
-    this.reset();
-  }
-  Particle.prototype.reset = function() {
+  function Particle() { this.reset(); }
+  Particle.prototype.reset = function () {
     this.x = Math.random() * w;
     this.y = Math.random() * h;
     this.vx = (Math.random() - 0.5) * 0.4;
@@ -144,11 +153,11 @@ const SEQUENCES = [
     const colors = ['#00f5ff', '#00ff88', '#ff00cc'];
     this.color = colors[Math.floor(Math.random() * colors.length)];
   };
-  Particle.prototype.update = function() {
+  Particle.prototype.update = function () {
     this.x += this.vx; this.y += this.vy;
     if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
   };
-  Particle.prototype.draw = function() {
+  Particle.prototype.draw = function () {
     ctx.save();
     ctx.globalAlpha = this.alpha;
     ctx.fillStyle = this.color;
@@ -163,7 +172,6 @@ const SEQUENCES = [
     resize();
     particles = Array.from({ length: 80 }, () => new Particle());
   }
-
   function loop() {
     ctx.clearRect(0, 0, w, h);
     particles.forEach(p => { p.update(); p.draw(); });
@@ -178,13 +186,20 @@ const SEQUENCES = [
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  if (id === 'screen-menu') showMenuQuote();
 }
 
-// ── BACK TO MENU CONFIRMATION ──
-function confirmGoMenu() {
-  if (confirm('Opravdu chceš opustit útok a vrátit se do menu?')) {
-    goMenu();
-  }
+// ── MENU QUOTE ──
+function showMenuQuote() {
+  const el = document.getElementById('menu-quote-text');
+  if (!el) return;
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.textContent = '"' + MENU_QUOTES[menuQuoteIndex] + '"';
+    menuQuoteIndex = (menuQuoteIndex + 1) % MENU_QUOTES.length;
+    el.style.transition = 'opacity 0.5s';
+    el.style.opacity = '1';
+  }, 250);
 }
 
 // ── DIFFICULTY ──
@@ -192,14 +207,13 @@ function setDifficulty(diff, btn) {
   difficulty = diff;
   document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  const d = DIFFICULTIES[diff];
-  document.getElementById('threat-level').textContent = `HROZBA: ${d.threat}`;
+  document.getElementById('threat-level').textContent = `HROZBA: ${DIFFICULTIES[diff].threat}`;
 }
 
-
-
+// ── HALFAR SPEECH (in-game only) ──
 function speakHalfar(text) {
-  document.getElementById('halfar-speech').textContent = text;
+  const el = document.getElementById('halfar-speech');
+  if (el) el.textContent = text;
   animateHalfar();
 }
 
@@ -238,7 +252,6 @@ function startTimer() {
     timeLeft--;
     document.getElementById('timer').textContent = timeLeft;
 
-    // Decay on medium/hard
     const d = DIFFICULTIES[difficulty];
     if (d.progressDecay > 0 && progress > 0) {
       progress = Math.max(0, progress - d.progressDecay * 0.05);
@@ -256,9 +269,7 @@ function startTimer() {
   }, 1000);
 }
 
-// ── CHALLENGE TYPES ──
-const CHALLENGE_TYPES = ['typing', 'math', 'mcq', 'sequence'];
-
+// ── CHALLENGES ──
 function nextChallenge() {
   challengeActive = true;
   const types = difficulty === 'easy'
@@ -266,16 +277,14 @@ function nextChallenge() {
     : difficulty === 'medium'
     ? ['typing', 'math', 'mcq', 'sequence']
     : ['math', 'typing', 'sequence', 'mcq'];
-
-  const type = types[Math.floor(Math.random() * types.length)];
-  renderChallenge(type);
+  renderChallenge(types[Math.floor(Math.random() * types.length)]);
 }
 
 function renderChallenge(type) {
-  const typeEl    = document.getElementById('challenge-type');
-  const contentEl = document.getElementById('challenge-content');
-  const inputEl   = document.getElementById('challenge-input-area');
-  const feedbackEl= document.getElementById('challenge-feedback');
+  const typeEl     = document.getElementById('challenge-type');
+  const contentEl  = document.getElementById('challenge-content');
+  const inputEl    = document.getElementById('challenge-input-area');
+  const feedbackEl = document.getElementById('challenge-feedback');
   feedbackEl.textContent = '';
   feedbackEl.className = 'challenge-feedback';
 
@@ -290,10 +299,7 @@ function renderChallenge(type) {
     `;
     setTimeout(() => {
       const inp = document.getElementById('type-input');
-      if (inp) {
-        inp.focus();
-        inp.addEventListener('keydown', e => { if (e.key === 'Enter') checkTyping(); });
-      }
+      if (inp) { inp.focus(); inp.addEventListener('keydown', e => { if (e.key === 'Enter') checkTyping(); }); }
     }, 50);
 
   } else if (type === 'math') {
@@ -307,10 +313,7 @@ function renderChallenge(type) {
     `;
     setTimeout(() => {
       const inp = document.getElementById('math-input');
-      if (inp) {
-        inp.focus();
-        inp.addEventListener('keydown', e => { if (e.key === 'Enter') checkMath(); });
-      }
+      if (inp) { inp.focus(); inp.addEventListener('keydown', e => { if (e.key === 'Enter') checkMath(); }); }
     }, 50);
 
   } else if (type === 'mcq') {
@@ -334,10 +337,7 @@ function renderChallenge(type) {
     `;
     setTimeout(() => {
       const inp = document.getElementById('seq-input');
-      if (inp) {
-        inp.focus();
-        inp.addEventListener('keydown', e => { if (e.key === 'Enter') checkSequence(); });
-      }
+      if (inp) { inp.focus(); inp.addEventListener('keydown', e => { if (e.key === 'Enter') checkSequence(); }); }
     }, 50);
   }
 }
@@ -379,9 +379,7 @@ function evaluate(correct) {
 
   if (correct) {
     consecutiveCorrect++;
-    if (consecutiveCorrect >= 3) {
-      combo = Math.min(combo + 1, 5);
-    }
+    if (consecutiveCorrect >= 3) combo = Math.min(combo + 1, 5);
     const gain = d.progressPerCorrect * combo;
     progress = Math.min(100, progress + gain);
     score += gain * 10;
@@ -389,14 +387,11 @@ function evaluate(correct) {
     feedbackEl.textContent = `✓ +${gain}% PROGRESS`;
     feedbackEl.className = 'challenge-feedback feedback-correct';
 
-    // Halfar comment
-    const comments = consecutiveCorrect >= 3 ? HALFAR_COMMENTS.combo : HALFAR_COMMENTS.correct;
-    speakHalfar(comments[Math.floor(Math.random() * comments.length)]);
+    const pool = consecutiveCorrect >= 3 ? HALFAR_COMMENTS.combo : HALFAR_COMMENTS.correct;
+    speakHalfar(pool[Math.floor(Math.random() * pool.length)]);
 
-    // Update combo display
     document.getElementById('combo-value').textContent = `x${combo}`;
-    const comboEl = document.getElementById('combo-display');
-    comboEl.style.borderColor = combo >= 3 ? 'var(--magenta)' : 'var(--border)';
+    document.getElementById('combo-display').style.borderColor = combo >= 3 ? 'var(--magenta)' : 'var(--border)';
 
   } else {
     consecutiveCorrect = 0;
@@ -419,9 +414,7 @@ function evaluate(correct) {
     return;
   }
 
-  setTimeout(() => {
-    if (!challengeActive) nextChallenge();
-  }, 1000);
+  setTimeout(() => { if (!challengeActive) nextChallenge(); }, 1000);
 }
 
 // ── UPDATE UI ──
@@ -434,7 +427,6 @@ function updateProgress(pct) {
   skull.style.left = `${p}%`;
   pctEl.textContent = `${Math.round(p)}%`;
 
-  // Color shift as progress increases
   if (p > 70) {
     fill.style.background = 'linear-gradient(90deg, var(--magenta), var(--red))';
     fill.style.boxShadow = '0 0 12px var(--red)';
@@ -454,9 +446,8 @@ function updateServerBars(pct) {
   document.getElementById('srv-net').style.width = `${3 + p * 0.95}%`;
 
   const ping = Math.round(12 + p * 98);
-  document.getElementById('srv-ping').textContent = `${ping}ms`;
-
   const pingEl = document.getElementById('srv-ping');
+  pingEl.textContent = `${ping}ms`;
   if (p > 70) {
     pingEl.style.color = 'var(--red)';
     pingEl.style.textShadow = '0 0 8px var(--red)';
@@ -465,10 +456,8 @@ function updateServerBars(pct) {
     pingEl.style.textShadow = '0 0 8px var(--yellow)';
   }
 
-  // Loading bar in browser
   document.getElementById('bak-loading').style.width = `${10 + p * 0.9}%`;
 
-  // Shake the browser content at high progress
   if (p > 80) {
     const bc = document.getElementById('browser-content');
     bc.style.animation = 'shake 0.3s infinite';
@@ -482,9 +471,7 @@ function endGame(won) {
   challengeActive = false;
 
   if (won) {
-    // Show crash overlay
     document.getElementById('browser-crash').classList.add('visible');
-    speakHalfar("Halfarovy Dušičky aktivovány! Bakaláři padají!");
     setTimeout(() => {
       document.getElementById('final-score').textContent = score.toLocaleString();
       showScreen('screen-win');
@@ -492,7 +479,6 @@ function endGame(won) {
     }, 1200);
   } else {
     document.getElementById('final-score-lose').textContent = `${Math.round(progress)}%`;
-    speakHalfar("Selhal jsi... Bakaláři přežili.");
     showScreen('screen-lose');
   }
 }
@@ -517,7 +503,11 @@ function spawnSkullRain() {
   }
 }
 
-// ── MENU ──
+// ── BACK TO MENU ──
+function confirmGoMenu() {
+  if (confirm('Opravdu chceš opustit útok a vrátit se do menu?')) goMenu();
+}
+
 function goMenu() {
   clearInterval(timerInterval);
   progress = 0; combo = 1; score = 0;

@@ -75,8 +75,38 @@ html, body {
   position: fixed; inset: 0; z-index: 10;
   overflow-y: auto;
   overflow-x: hidden;
+  pointer-events: none;
 }
-.screen.active { display: flex; align-items: center; justify-content: center; }
+.screen.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: all;
+}
+
+/* ── MENU QUOTE ── */
+.menu-quote-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(255, 234, 0, 0.05);
+  border: 1px solid rgba(255, 234, 0, 0.25);
+  padding: 14px 20px;
+  margin-bottom: 20px;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  min-height: 52px;
+}
+.menu-quote-icon { font-size: 20px; flex-shrink: 0; }
+.menu-quote-text {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--yellow);
+  text-shadow: 0 0 8px var(--yellow);
+  text-align: center;
+  letter-spacing: 1px;
+  transition: opacity 0.5s;
+}
 
 /* ── HOLOGRAM FRAME ── */
 .hologram-frame {

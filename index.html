@@ -12,8 +12,8 @@
   <div class="scanlines"></div>
   <div class="grid-overlay"></div>
 
-  <!-- PARTICLES -->
-  <canvas id="particles"></canvas>
+  <!-- PARTICLES (pointer-events:none handled in CSS, z-index below screens) -->
+  <canvas id="particles" style="pointer-events:none;z-index:0;"></canvas>
 
   <!-- ===== MAIN MENU ===== -->
   <div id="screen-menu" class="screen active">
@@ -59,6 +59,12 @@
       </div>
 
 
+
+      <!-- HALFAR QUOTE -->
+      <div class="menu-quote-box">
+        <span class="menu-quote-icon">💬</span>
+        <span id="menu-quote-text" class="menu-quote-text">"..."</span>
+      </div>
 
       <!-- DIFFICULTY -->
       <div class="difficulty-section">
