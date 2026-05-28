@@ -15,6 +15,7 @@ let currentAnswer = null;
 let consecutiveCorrect = 0;
 let menuQuoteIndex = 0;
 let challengeTimeout = null;
+let challengeQueue = [];
 
 const DIFFICULTIES = {
   easy:   { time: 90, progressPerCorrect: 14, progressDecay: 0, label: 'NOOB',   threat: 'NÍZKÁ' },
@@ -263,6 +264,7 @@ function startGame() {
   combo = 1;
   score = 0;
   consecutiveCorrect = 0;
+  challengeQueue = [];
   const d = DIFFICULTIES[difficulty];
   timeLeft = d.time;
 
@@ -314,7 +316,11 @@ function nextChallenge() {
     : difficulty === 'medium'
     ? ['typing', 'math', 'mcq', 'sequence']
     : ['math', 'typing', 'sequence', 'mcq'];
-  renderChallenge(types[Math.floor(Math.random() * types.length)]);
+
+  if (challengeQueue.length === 0) {
+    challengeQueue = [...types].sort(() => Math.random() - 0.5);
+  }
+  renderChallenge(challengeQueue.pop());
 }
 
 function renderChallenge(type) {
@@ -563,7 +569,7 @@ function goMenu() {
   if (challengeTimeout) { clearTimeout(challengeTimeout); challengeTimeout = null; }
   challengeActive = false;
   currentAnswer = null;
-  progress = 0; combo = 1; score = 0; consecutiveCorrect = 0;
+  progress = 0; combo = 1; score = 0; consecutiveCorrect = 0; challengeQueue = [];
   document.getElementById('timer').style.color = '';
   document.getElementById('timer').style.textShadow = '';
   document.getElementById('browser-content').style.filter = '';
