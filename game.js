@@ -16,11 +16,12 @@ let consecutiveCorrect = 0;
 let menuQuoteIndex = 0;
 let challengeTimeout = null;
 let challengeQueue = [];
+let decayTick = 0;
 
 const DIFFICULTIES = {
-  easy:   { time: 90, progressPerCorrect: 14, progressDecay: 0, label: 'NOOB',   threat: 'NÍZKÁ' },
-  medium: { time: 60, progressPerCorrect: 10, progressDecay: 1, label: 'HACKER', threat: 'STŘEDNÍ' },
-  hard:   { time: 45, progressPerCorrect: 8,  progressDecay: 2, label: 'HALFAR', threat: 'KRITICKÁ' }
+  easy:   { time: 90, progressPerCorrect: 14, decayInterval: 3, label: 'NOOB',   threat: 'NÍZKÁ' },
+  medium: { time: 60, progressPerCorrect: 10, decayInterval: 2, label: 'HACKER', threat: 'STŘEDNÍ' },
+  hard:   { time: 45, progressPerCorrect: 8,  decayInterval: 1, label: 'HALFAR', threat: 'KRITICKÁ' }
 };
 
 // ── MENU QUOTES (rotate each visit) ──
@@ -265,6 +266,7 @@ function startGame() {
   score = 0;
   consecutiveCorrect = 0;
   challengeQueue = [];
+  decayTick = 0;
   const d = DIFFICULTIES[difficulty];
   timeLeft = d.time;
 
@@ -287,7 +289,9 @@ function startTimer() {
     timeLeft--;
     document.getElementById('timer').textContent = timeLeft;
 
-    if (progress > 0) {
+    const d = DIFFICULTIES[difficulty];
+    decayTick++;
+    if (d.decayInterval > 0 && progress > 0 && decayTick % d.decayInterval === 0) {
       progress = Math.max(0, progress - 1);
       updateProgress(progress);
     }
@@ -568,7 +572,7 @@ function goMenu() {
   if (challengeTimeout) { clearTimeout(challengeTimeout); challengeTimeout = null; }
   challengeActive = false;
   currentAnswer = null;
-  progress = 0; combo = 1; score = 0; consecutiveCorrect = 0; challengeQueue = [];
+  progress = 0; combo = 1; score = 0; consecutiveCorrect = 0; challengeQueue = []; decayTick = 0;
   document.getElementById('timer').style.color = '';
   document.getElementById('timer').style.textShadow = '';
   document.getElementById('browser-content').style.filter = '';
