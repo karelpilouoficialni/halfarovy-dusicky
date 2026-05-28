@@ -520,3 +520,77 @@ function goMenu() {
 
 // ── INIT ──
 showScreen('screen-menu');
+
+// ── MENU MOUSE PARALLAX + SPOTLIGHT ──
+(function () {
+  const spotlight  = document.getElementById('menu-spotlight');
+  const grid       = document.getElementById('grid-overlay');
+  const menuScreen = document.getElementById('screen-menu');
+
+  let mx = window.innerWidth  / 2;
+  let my = window.innerHeight / 2;
+  let frame;
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  let curX = mx, curY = my;
+
+  function tick() {
+    curX = lerp(curX, mx, 0.08);
+    curY = lerp(curY, my, 0.08);
+
+    const nx = curX / window.innerWidth;   // 0..1
+    const ny = curY / window.innerHeight;  // 0..1
+
+    // Spotlight follows cursor with smooth lag
+    spotlight.style.background = `radial-gradient(
+      560px circle at ${curX}px ${curY}px,
+      rgba(0,245,255,0.09) 0%,
+      rgba(255,0,204,0.05) 30%,
+      transparent 65%
+    )`;
+
+    // Grid drifts slightly opposite to cursor (parallax)
+    const shiftX = (nx - 0.5) * -18;
+    const shiftY = (ny - 0.5) * -18;
+    grid.style.backgroundPosition = `${shiftX}px ${shiftY}px`;
+
+    // Hologram frame subtle 3D tilt
+    const frame = document.querySelector('.hologram-frame');
+    if (frame) {
+      const rotY = (nx - 0.5) *  6;  // degrees
+      const rotX = (ny - 0.5) * -5;
+      frame.style.transform = `perspective(1200px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+    }
+
+    frame2 = requestAnimationFrame(tick);
+  }
+
+  let frame2;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX;
+    my = e.clientY;
+  });
+
+  // Only run effect when on menu screen; pause otherwise
+  const observer = new MutationObserver(() => {
+    if (menuScreen.classList.contains('active')) {
+      spotlight.style.opacity = '1';
+      if (!frame2) frame2 = requestAnimationFrame(tick);
+    } else {
+      spotlight.style.opacity = '0';
+      cancelAnimationFrame(frame2);
+      frame2 = null;
+      // Reset frame tilt
+      const f = document.querySelector('.hologram-frame');
+      if (f) f.style.transform = '';
+      grid.style.backgroundPosition = '0px 0px';
+    }
+  });
+  observer.observe(menuScreen, { attributes: true, attributeFilter: ['class'] });
+
+  // Start immediately since menu is active on load
+  spotlight.style.opacity = '1';
+  frame2 = requestAnimationFrame(tick);
+})();
