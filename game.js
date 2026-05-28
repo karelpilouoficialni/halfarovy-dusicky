@@ -40,6 +40,10 @@ const HALFAR_COMMENTS = {
     "Výborně!",
     "Ping stoupá!",
     "Sítě hoří!",
+    "Nepřestávej!",
+    "Bakaláři krvácejí!",
+    "Ano! Takhle!",
+    "Cítím jejich strach!",
   ],
   wrong: [
     "Blbec!",
@@ -47,12 +51,21 @@ const HALFAR_COMMENTS = {
     "Server se směje!",
     "No tak!",
     "Tohle nestačí!",
+    "Soustřeď se!",
+    "Tohle byl trapas!",
+    "Mysli, nebo prohrajeme!",
+    "Katastrofa!",
+    "Halfar není spokojen!",
   ],
   combo: [
     "NEUVĚŘITELNÉ!",
     "COMBO CHAIN!",
     "MEGA ÚTOK!",
     "HALFAR MODE!",
+    "BOŽSKÝ COMBO!",
+    "DESTRUKCE SCHVÁLENA!",
+    "ON FIRE!",
+    "NEPRŮSTŘELNÝ!",
   ],
 };
 
@@ -68,6 +81,21 @@ const TYPING_CHALLENGES = [
   "SERVER_ERROR",
   "WIFI_DEAD",
   "ZNAMKY_PRYC",
+  "HALFAR_IS_FAST",
+  "DDOS_BAKALARI",
+  "ETHERNET_KABEL",
+  "ROUTER_REBOOT",
+  "FIREWALL_DOWN",
+  "PROXY_FAIL",
+  "SIT_HORI",
+  "LAG_SPIKE",
+  "PACKET_LOSS",
+  "BUFFERBLOAT",
+  "HALFAR_WINS",
+  "SCHOOL_NET",
+  "HACKING_MAIN",
+  "DATA_BREACH",
+  "PASSWORD_123",
 ];
 
 // ── MATH CHALLENGES ──
@@ -120,7 +148,7 @@ const MCQ_CHALLENGES = [
   {
     question: "Jak se jmenuje hlavní hacker?",
     correct: "Radim Halfar",
-    options: ["Jan Novák", "Radim Halfar", "Petr Kovář", "Admin 404"]
+    options: ["Antonín Ulman", "Radim Halfar", "Petr Novotný", "Židovský Pavel"]
   },
 ];
 
