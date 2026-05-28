@@ -58,28 +58,7 @@
         </div>
       </div>
 
-      <!-- VOICE LINES -->
-      <div class="voice-section">
-        <div class="section-label">◈ HALFAR ŘÍKÁ ◈</div>
-        <div class="voice-buttons">
-          <button class="voice-btn" onclick="playVoice(0)">
-            <span class="voice-icon">🔊</span>
-            <span>"Dneska to schytají!"</span>
-          </button>
-          <button class="voice-btn" onclick="playVoice(1)">
-            <span class="voice-icon">🔊</span>
-            <span>"Internet? Jaký internet!"</span>
-          </button>
-          <button class="voice-btn" onclick="playVoice(2)">
-            <span class="voice-icon">🔊</span>
-            <span>"Bakaláři padají!"</span>
-          </button>
-          <button class="voice-btn" onclick="playVoice(3)">
-            <span class="voice-icon">🔊</span>
-            <span>"Hehe... lag detected."</span>
-          </button>
-        </div>
-      </div>
+
 
       <!-- DIFFICULTY -->
       <div class="difficulty-section">
@@ -135,9 +114,10 @@
             <div class="progress-percent" id="progress-percent">0%</div>
           </div>
         </div>
-        <div class="hud-right">
+        <div class="hud-right" style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
           <div class="hud-label">ČAS</div>
           <div class="hud-value holo-text" id="timer">60</div>
+          <button class="back-btn" onclick="confirmGoMenu()">⬅ MENU</button>
         </div>
       </div>
 

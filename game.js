@@ -19,15 +19,7 @@ const DIFFICULTIES = {
   hard:   { time: 45, progressPerCorrect: 8,  progressDecay: 2, label: 'HALFAR', threat: 'KRITICKÁ' }
 };
 
-// ── VOICE LINES (simulated via Web Speech API) ──
-const VOICE_LINES = [
-  "Dneska to schytají!",
-  "Internet? Jaký internet!",
-  "Bakaláři padají!",
-  "Hehe... lag detected.",
-];
-
-const HALFAR_COMMENTS = {
+// ── HALFAR COMMENTS ──
   correct: [
     "Jo, to je ono!",
     "Server se třese!",
@@ -188,6 +180,13 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
 }
 
+// ── BACK TO MENU CONFIRMATION ──
+function confirmGoMenu() {
+  if (confirm('Opravdu chceš opustit útok a vrátit se do menu?')) {
+    goMenu();
+  }
+}
+
 // ── DIFFICULTY ──
 function setDifficulty(diff, btn) {
   difficulty = diff;
@@ -195,29 +194,12 @@ function setDifficulty(diff, btn) {
   btn.classList.add('active');
   const d = DIFFICULTIES[diff];
   document.getElementById('threat-level').textContent = `HROZBA: ${d.threat}`;
-  speakHalfar(diff === 'hard' ? "Plné Dušičky aktivovány!" : diff === 'medium' ? "Hacker mode ON!" : "Jdeme na to!");
 }
 
-// ── VOICE (Web Speech API) ──
-function playVoice(index) {
-  const line = VOICE_LINES[index];
-  speakText(line);
-  animateHalfar();
-}
 
-function speakText(text) {
-  if (!window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'cs-CZ';
-  u.rate = 1.0;
-  u.pitch = 0.8;
-  window.speechSynthesis.speak(u);
-}
 
 function speakHalfar(text) {
   document.getElementById('halfar-speech').textContent = text;
-  speakText(text);
   animateHalfar();
 }
 

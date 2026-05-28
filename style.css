@@ -299,30 +299,25 @@ html, body {
   opacity: 0.7;
 }
 
-/* ── VOICE BUTTONS ── */
-.voice-section { margin-bottom: 20px; }
-.voice-buttons {
-  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
-}
-.voice-btn {
-  background: rgba(0,245,255,0.06);
-  border: 1px solid var(--border);
-  color: var(--cyan);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  padding: 8px 16px;
+/* ── BACK BUTTON ── */
+.back-btn {
+  background: rgba(255,34,68,0.08);
+  border: 1px solid rgba(255,34,68,0.4);
+  color: rgba(255,34,68,0.8);
+  font-family: var(--font-hud);
+  font-size: 10px;
+  letter-spacing: 2px;
+  padding: 5px 10px;
   cursor: pointer;
-  display: flex; align-items: center; gap: 8px;
   transition: all 0.2s;
-  clip-path: polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%);
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
 }
-.voice-btn:hover {
-  background: rgba(0,245,255,0.15);
-  border-color: var(--cyan);
-  box-shadow: var(--glow);
-  transform: translateX(2px);
+.back-btn:hover {
+  background: rgba(255,34,68,0.2);
+  border-color: var(--red);
+  color: var(--red);
+  box-shadow: 0 0 8px var(--red);
 }
-.voice-icon { font-size: 16px; }
 
 /* ── DIFFICULTY BUTTONS ── */
 .difficulty-section { margin-bottom: 24px; }
