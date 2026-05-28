@@ -13,6 +13,7 @@ let challengeActive = false;
 let currentAnswer = null;
 let consecutiveCorrect = 0;
 let menuQuoteIndex = 0;
+let challengeTimeout = null;
 
 const DIFFICULTIES = {
   easy:   { time: 90, progressPerCorrect: 14, progressDecay: 0, label: 'NOOB',   threat: 'NÍZKÁ' },
@@ -226,6 +227,9 @@ function animateHalfar() {
 
 // ── START GAME ──
 function startGame() {
+  if (challengeTimeout) { clearTimeout(challengeTimeout); challengeTimeout = null; }
+  challengeActive = false;
+  currentAnswer = null;
   progress = 0;
   combo = 1;
   score = 0;
@@ -256,6 +260,10 @@ function startTimer() {
     if (d.progressDecay > 0 && progress > 0) {
       progress = Math.max(0, progress - d.progressDecay * 0.05);
       updateProgress(progress);
+    }
+    if (score > 0) {
+      const decay = Math.max(1, Math.round(combo * 1.5));
+      score = Math.max(0, score - decay);
     }
 
     if (timeLeft <= 0) {
@@ -323,8 +331,11 @@ function renderChallenge(type) {
     contentEl.textContent = q.question;
     const shuffled = [...q.options].sort(() => Math.random() - 0.5);
     inputEl.innerHTML = shuffled.map(opt =>
-      `<button class="mcq-btn" onclick="checkMCQ(this, '${opt}')">${opt}</button>`
+      `<button class="mcq-btn">${opt}</button>`
     ).join('');
+    inputEl.querySelectorAll('.mcq-btn').forEach(btn => {
+      btn.addEventListener('click', () => checkMCQ(btn));
+    });
 
   } else if (type === 'sequence') {
     const s = SEQUENCES[Math.floor(Math.random() * SEQUENCES.length)];
@@ -351,9 +362,9 @@ function checkMath() {
   const val = (document.getElementById('math-input')?.value || '').trim();
   evaluate(val === currentAnswer);
 }
-function checkMCQ(btn, answer) {
+function checkMCQ(btn) {
   document.querySelectorAll('.mcq-btn').forEach(b => b.disabled = true);
-  if (answer === currentAnswer) {
+  if (btn.textContent === currentAnswer) {
     btn.classList.add('correct');
     evaluate(true);
   } else {
@@ -414,7 +425,8 @@ function evaluate(correct) {
     return;
   }
 
-  setTimeout(() => { if (!challengeActive) nextChallenge(); }, 1000);
+    const timeout = setTimeout(() => { if (!challengeActive) nextChallenge(); }, 1000);
+    challengeTimeout = timeout;
 }
 
 // ── UPDATE UI ──
@@ -510,7 +522,10 @@ function confirmGoMenu() {
 
 function goMenu() {
   clearInterval(timerInterval);
-  progress = 0; combo = 1; score = 0;
+  if (challengeTimeout) { clearTimeout(challengeTimeout); challengeTimeout = null; }
+  challengeActive = false;
+  currentAnswer = null;
+  progress = 0; combo = 1; score = 0; consecutiveCorrect = 0;
   document.getElementById('timer').style.color = '';
   document.getElementById('timer').style.textShadow = '';
   document.getElementById('browser-content').style.filter = '';
