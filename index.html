@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Halfarovy Dušičky – CYBERÚTOK NA BAKALÁŘE</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- SCANLINES OVERLAY -->
+  <div class="scanlines"></div>
+  <div class="grid-overlay"></div>
+
+  <!-- PARTICLES -->
+  <canvas id="particles"></canvas>
+
+  <!-- ===== MAIN MENU ===== -->
+  <div id="screen-menu" class="screen active">
+    <div class="hologram-frame">
+      <div class="holo-header">
+        <div class="classified-badge">⚠ PŘÍSNĚ TAJNÉ ⚠</div>
+        <h1 class="glitch-title" data-text="HALFAROVY DUŠIČKY">HALFAROVY DUŠIČKY</h1>
+        <p class="subtitle">// PROJEKT: VÝPADEK BAKALÁŘŮ //</p>
+      </div>
+
+      <div class="mascot-section">
+        <div class="halfar-container">
+          <div class="halfar-glow"></div>
+          <div class="halfar-avatar">
+            <div class="avatar-body">
+              <div class="avatar-head">
+                <div class="avatar-eyes">
+                  <span class="eye left"></span>
+                  <span class="eye right"></span>
+                </div>
+                <div class="avatar-smile"></div>
+              </div>
+              <div class="avatar-torso">
+                <span class="badge-radim">R.H.</span>
+              </div>
+              <div class="avatar-arms">
+                <div class="arm left-arm"></div>
+                <div class="arm right-arm"></div>
+              </div>
+            </div>
+            <div class="wifi-waves">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="skull-particles">
+              <span class="skull">💀</span>
+              <span class="skull">👻</span>
+              <span class="skull">💀</span>
+            </div>
+          </div>
+          <div class="halfar-name">RADIM HALFAR</div>
+          <div class="halfar-title">// Mistr Internetového Chaosu //</div>
+        </div>
+      </div>
+
+      <!-- VOICE LINES -->
+      <div class="voice-section">
+        <div class="section-label">◈ HALFAR ŘÍKÁ ◈</div>
+        <div class="voice-buttons">
+          <button class="voice-btn" onclick="playVoice(0)">
+            <span class="voice-icon">🔊</span>
+            <span>"Dneska to schytají!"</span>
+          </button>
+          <button class="voice-btn" onclick="playVoice(1)">
+            <span class="voice-icon">🔊</span>
+            <span>"Internet? Jaký internet!"</span>
+          </button>
+          <button class="voice-btn" onclick="playVoice(2)">
+            <span class="voice-icon">🔊</span>
+            <span>"Bakaláři padají!"</span>
+          </button>
+          <button class="voice-btn" onclick="playVoice(3)">
+            <span class="voice-icon">🔊</span>
+            <span>"Hehe... lag detected."</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- DIFFICULTY -->
+      <div class="difficulty-section">
+        <div class="section-label">◈ POKROČILOST ◈</div>
+        <div class="diff-buttons">
+          <button class="diff-btn active" id="diff-easy" onclick="setDifficulty('easy', this)">
+            <span class="diff-icon">📶</span>
+            <span class="diff-name">NOOB</span>
+            <span class="diff-desc">Základní lag</span>
+          </button>
+          <button class="diff-btn" id="diff-medium" onclick="setDifficulty('medium', this)">
+            <span class="diff-icon">📡</span>
+            <span class="diff-name">HACKER</span>
+            <span class="diff-desc">Pokročilý útok</span>
+          </button>
+          <button class="diff-btn" id="diff-hard" onclick="setDifficulty('hard', this)">
+            <span class="diff-icon">☠️</span>
+            <span class="diff-name">HALFAR</span>
+            <span class="diff-desc">Plné Dušičky</span>
+          </button>
+        </div>
+      </div>
+
+      <button class="start-btn" onclick="startGame()">
+        <span class="btn-glitch" data-text="» SPUSTIT ÚTOK «">» SPUSTIT ÚTOK «</span>
+      </button>
+
+      <div class="system-status">
+        <span class="status-dot"></span> BAKALÁŘE SERVER: ONLINE &nbsp;|&nbsp;
+        <span class="status-dot"></span> HALFAR: PŘIPRAVEN &nbsp;|&nbsp;
+        <span id="threat-level">HROZBA: NÍZKÁ</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== GAME SCREEN ===== -->
+  <div id="screen-game" class="screen">
+    <div class="game-layout">
+
+      <!-- TOP HUD -->
+      <div class="hud-top">
+        <div class="hud-left">
+          <div class="hud-label">ÚTOČNÍK</div>
+          <div class="hud-value holo-text">HALFAR_v2.3</div>
+        </div>
+        <div class="hud-center">
+          <div class="hud-label">PROGRES ÚTOKU</div>
+          <div class="progress-container">
+            <div class="progress-track">
+              <div id="attack-progress" class="progress-fill"></div>
+              <div class="progress-skull" id="progress-skull">💀</div>
+            </div>
+            <div class="progress-percent" id="progress-percent">0%</div>
+          </div>
+        </div>
+        <div class="hud-right">
+          <div class="hud-label">ČAS</div>
+          <div class="hud-value holo-text" id="timer">60</div>
+        </div>
+      </div>
+
+      <!-- HALFAR SIDEBAR -->
+      <div class="game-main">
+        <div class="halfar-side">
+          <div class="halfar-mini-container">
+            <div class="halfar-mini-avatar" id="halfar-mini">
+              <div class="mini-head">
+                <div class="mini-eyes">
+                  <span class="mini-eye" id="eye-l"></span>
+                  <span class="mini-eye" id="eye-r"></span>
+                </div>
+              </div>
+              <div class="mini-body">R.H.</div>
+            </div>
+            <div class="halfar-speech" id="halfar-speech">Pojď do toho!</div>
+          </div>
+
+          <div class="server-status-panel">
+            <div class="panel-title">// SERVER STATUS //</div>
+            <div class="server-bar-row">
+              <span>CPU</span>
+              <div class="server-bar"><div id="srv-cpu" class="srv-fill" style="width:5%"></div></div>
+            </div>
+            <div class="server-bar-row">
+              <span>RAM</span>
+              <div class="server-bar"><div id="srv-ram" class="srv-fill" style="width:8%"></div></div>
+            </div>
+            <div class="server-bar-row">
+              <span>NET</span>
+              <div class="server-bar"><div id="srv-net" class="srv-fill" style="width:3%"></div></div>
+            </div>
+            <div class="server-bar-row">
+              <span>PING</span>
+              <div class="srv-ping" id="srv-ping">12ms</div>
+            </div>
+          </div>
+
+          <div class="combo-display" id="combo-display">
+            <div class="combo-label">COMBO</div>
+            <div class="combo-value" id="combo-value">x1</div>
+          </div>
+        </div>
+
+        <!-- CHALLENGE AREA -->
+        <div class="challenge-area">
+          <div class="challenge-box" id="challenge-box">
+            <div class="challenge-type" id="challenge-type">INICIALIZACE...</div>
+            <div class="challenge-content" id="challenge-content"></div>
+            <div class="challenge-input-area" id="challenge-input-area"></div>
+            <div class="challenge-feedback" id="challenge-feedback"></div>
+          </div>
+
+          <!-- BAKALARE PREVIEW -->
+          <div class="bakalare-preview" id="bakalare-preview">
+            <div class="bakalare-browser">
+              <div class="browser-bar">
+                <span class="browser-dot red"></span>
+                <span class="browser-dot yellow"></span>
+                <span class="browser-dot green"></span>
+                <span class="browser-url">🔒 www.bakalari.cz/skola</span>
+              </div>
+              <div class="browser-content" id="browser-content">
+                <div class="page-title">Bakaláři – Žákovský modul</div>
+                <div class="page-row"><div class="page-cell head">Předmět</div><div class="page-cell head">Známka</div></div>
+                <div class="page-row"><div class="page-cell">Matematika</div><div class="page-cell grade">2</div></div>
+                <div class="page-row"><div class="page-cell">Čeština</div><div class="page-cell grade">1</div></div>
+                <div class="page-row"><div class="page-cell">Fyzika</div><div class="page-cell grade">3</div></div>
+                <div class="loading-bar-wrap"><div class="loading-bar-fill" id="bak-loading"></div></div>
+              </div>
+              <div class="browser-crash-overlay" id="browser-crash">
+                <div class="crash-text">⚠ ERROR 503<br>SERVICE UNAVAILABLE<br><small>Halfar strikes again</small></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== WIN SCREEN ===== -->
+  <div id="screen-win" class="screen">
+    <div class="win-container">
+      <div class="glitch-effect" id="win-glitch"></div>
+      <div class="win-content">
+        <div class="win-badge">☠ ÚTOK ÚSPĚŠNÝ ☠</div>
+        <h2 class="win-title">HALFAROVY DUŠIČKY</h2>
+        <h3 class="win-subtitle">AKTIVOVÁNY!</h3>
+        <div class="win-mascot">
+          <div class="win-halfar">
+            <div class="win-head"></div>
+            <div class="win-body">R.H.</div>
+          </div>
+        </div>
+        <div class="crash-report">
+          <div class="report-title">// CRASH REPORT //</div>
+          <div class="report-line"><span>BAKALÁŘE STATUS:</span><span class="report-val red">💀 DOWN</span></div>
+          <div class="report-line"><span>INTERNET VE ŠKOLE:</span><span class="report-val red">☠ MRTVÝ</span></div>
+          <div class="report-line"><span>HALFAR:</span><span class="report-val green">✓ SPOKOJENÝ</span></div>
+          <div class="report-line"><span>STUDENTI:</span><span class="report-val yellow">🎉 ŠŤASTNÍ</span></div>
+          <div class="report-line"><span>SKÓRE:</span><span class="report-val cyan" id="final-score">0</span></div>
+        </div>
+        <div class="skull-rain" id="skull-rain"></div>
+        <button class="start-btn" onclick="goMenu()">
+          <span class="btn-glitch" data-text="» HRÁT ZNOVU «">» HRÁT ZNOVU «</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LOSE SCREEN ===== -->
+  <div id="screen-lose" class="screen">
+    <div class="win-container">
+      <div class="win-content">
+        <div class="win-badge lose-badge">✗ ÚTOK SELHAL ✗</div>
+        <h2 class="win-title" style="color: var(--red)">BAKALÁŘI PŘEŽILI!</h2>
+        <h3 class="win-subtitle" style="color: var(--red)">Halfar zklamaný...</h3>
+        <div class="crash-report">
+          <div class="report-title">// VÝSLEDKY //</div>
+          <div class="report-line"><span>BAKALÁŘE STATUS:</span><span class="report-val green">✓ ONLINE</span></div>
+          <div class="report-line"><span>HALFAR:</span><span class="report-val red">😤 FRUSTROVANÝ</span></div>
+          <div class="report-line"><span>DOSAŽENO:</span><span class="report-val cyan" id="final-score-lose">0%</span></div>
+        </div>
+        <button class="start-btn" onclick="goMenu()">
+          <span class="btn-glitch" data-text="» ZKUSIT ZNOVU «">» ZKUSIT ZNOVU «</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
