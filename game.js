@@ -287,9 +287,8 @@ function startTimer() {
     timeLeft--;
     document.getElementById('timer').textContent = timeLeft;
 
-    const d = DIFFICULTIES[difficulty];
-    if (d.progressDecay > 0 && progress > 0) {
-      progress = Math.max(0, progress - d.progressDecay * 0.05);
+    if (progress > 0) {
+      progress = Math.max(0, progress - 1);
       updateProgress(progress);
     }
     if (score > 0) {
